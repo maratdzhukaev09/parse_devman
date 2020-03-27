@@ -61,33 +61,10 @@ def check_url(url):
     except:
         return False
 
-os.makedirs("books", exist_ok=True)
-os.makedirs("images", exist_ok=True)
-
-id_list = []
-library = []
-get_description_book('http://tululu.org/b9/')
-
 def get_page_ids(url):
     response = requests.get(url)
     response.raise_for_status()
     soup = BeautifulSoup(response.text, 'lxml')
-for id_ in id_list:
-    if check_url(id_):
-        book = dict()
-        book['title'], book['author'], book['comments'], book['genres'], url_book, url_image = get_description_book(id_)
-
-        if args.skip_txt:
-            book['book_path'] = None
-        else:
-            book['book_path'] = download_txt(url_book, book['title'] + '.txt')
-        if args.skip_imgs:
-            book['image_src'] = None
-        else:
-            image_filename = url_image.split('/')[-1]
-            book['image_src'] = download_picture(url_image, image_filename)
-
-        library.append(book)
     page_ids = [urljoin(url, id_.select_one('a')['href']) for id_ in soup.select('table.d_book')]
 
     return page_ids
@@ -124,6 +101,7 @@ def get_args():
 
     return args
 
+def main():
     args = get_args()
     start_page, end_page, filename = work_with_args(args)
     os.makedirs("books", exist_ok=True)
@@ -153,3 +131,6 @@ def get_args():
             library.append(book)
 
     write_json(library, filename)
+
+if __name__ == "__main__":
+    main()
