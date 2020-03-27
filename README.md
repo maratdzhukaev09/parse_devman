@@ -14,7 +14,7 @@
 
 ## Аргументы
 
-### --start_page X
+### --start_page xxx
 
 xxx - (int, по умолчанию `0`, <702) страница, с которой начинается скачивание книг.
 
@@ -23,7 +23,7 @@ python parse_tululu_category.py --start_page 700
 #Скачаются все книги, начиная с 700 страницы
 ```
 
-### --end_page X
+### --end_page xxx
 
 xxx - (int, по умолчанию `702`, <702) страница, до которой скачиваются книги.
 
@@ -39,7 +39,7 @@ python parse_tululu_category.py --tart_page 700 --end_page 701
 
 ### --dest_folder xxx
 
-xxx - (bool, по умолчанию `False`) .
+xxx - (bool, по умолчанию `False`).
 
 ```python
 python parse_tululu_category.py --dest_folder True
