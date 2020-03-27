@@ -51,7 +51,7 @@ def get_description_book(url):
     selector_g = 'span.d_book a'
     genres = [genre.text for genre in soup.select(selector_g)]
 
-    return title, author, comments, genres, book_path, picture_path
+    return title, author, comments, genres, url_txt, url_image
 
 def check_url(url):
     response = requests.get(url, allow_redirects=False)
