@@ -58,7 +58,7 @@ def check_url(url):
     try:
         get_description_book(url)
         return True
-    except:
+    except TypeError:
         return False
 
 def get_page_ids(url):
