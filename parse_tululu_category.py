@@ -41,9 +41,11 @@ def get_description_book(url):
 
     selector_ta = 'td.ow_px_td h1'
     title, author = soup.select_one(selector_ta).text.split('   ::   ')
-    book_path = urljoin('http://tululu.org/', soup.find('a', title=title+' - скачать книгу txt')['href'])
+    txt_href = soup.find('a', title=f'{title} - скачать книгу txt')['href']
+    url_txt = urljoin(url, txt_href)
     selector_pp = 'div.bookimage img'
-    picture_path = urljoin('http://tululu.org/', soup.select_one(selector_pp)['src'])
+    image_href = soup.select_one(selector_pp)['src']
+    url_image = urljoin(url, image_href)
     selector_c = 'div.texts span'
     comments = [comment.text for comment in soup.select(selector_c)]
     selector_g = 'span.d_book a'
