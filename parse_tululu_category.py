@@ -103,21 +103,22 @@ def main():
         ids += get_page_ids(url)
 
     for id_ in ids:
-        if check_url(id_):
-            book = dict()
-            book['title'], book['author'], book['comments'], book['genres'], url_txt, url_image = get_description_book(id_)
+        if not check_url(id_):
+            continue
+        book = dict()
+        book['title'], book['author'], book['comments'], book['genres'], url_txt, url_image = get_book(id_)
 
-            if args.skip_txt:
-                book['book_path'] = None
-            else:
-                book['book_path'] = download_txt(url_txt, f"{book['title']}.txt")
-            if args.skip_imgs:
-                book['image_src'] = None
-            else:
-                image_filename = url_image.split('/')[-1]
-                book['image_src'] = download_picture(url_image, image_filename)
+        if args.skip_txt:
+            book['book_path'] = None
+        else:
+            book['book_path'] = download_txt(url_txt, f"{book['title']}.txt")
+        if args.skip_imgs:
+            book['image_src'] = None
+        else:
+            image_filename = url_image.split('/')[-1]
+            book['image_src'] = download_picture(url_image, image_filename)
 
-            library.append(book)
+        library.append(book)
 
     write_json(library, filename)
 
