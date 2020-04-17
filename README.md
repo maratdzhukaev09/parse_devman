@@ -7,7 +7,7 @@
 Для запуска кода у вас уже должен быть установлен Python 3.
 
 - Скачайте код.
-- Установите нужные библиотеки командой `pip install -r requirements.txt requests BeautifulSoup4 lxml pathvalidate urllib3`.
+- Установите нужные библиотеки командой `pip install -r requirements.txt`.
 - Запутите код командой `python parse_tululu_category.py`.
 
 **! Команда устанавливает все книги в жанре научной фантастики (прочитайте про аргументы). !**
