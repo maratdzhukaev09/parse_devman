@@ -5,8 +5,9 @@ from urllib.parse import urljoin
 from itertools import groupby
 
 def write_json(library, filename):
-    with open(filename, "w", encoding='utf8') as file:
-        json.dump([], file, ensure_ascii=False)
+    if not os.path.exists(filename):
+        with open(filename, "w", encoding='utf8') as file:
+            json.dump([], file, ensure_ascii=False)
     with open(filename, "r") as file:
         library_old = json.load(file)
     with open(filename, "w", encoding='utf8') as file:
