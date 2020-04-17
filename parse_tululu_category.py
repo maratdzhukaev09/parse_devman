@@ -35,18 +35,18 @@ def download_txt(url, filename, folder='books'):
 
     return filepath
 
-def get_description_book(url):
+def get_book(url):
     response = requests.get(url)
     response.raise_for_status()
     soup = BeautifulSoup(response.text, 'lxml')
 
     selector_ta = 'td.ow_px_td h1'
     title, author = soup.select_one(selector_ta).text.split('   ::   ')
-    txt_href = soup.find('a', title=f'{title} - скачать книгу txt')['href']
-    url_txt = urljoin(url, txt_href)
+    href_txt = soup.find('a', title=f'{title} - скачать книгу txt')['href']
+    url_txt = urljoin(url, href_txt)
     selector_pp = 'div.bookimage img'
-    image_href = soup.select_one(selector_pp)['src']
-    url_image = urljoin(url, image_href)
+    href_image = soup.select_one(selector_pp)['src']
+    url_image = urljoin(url, href_image)
     selector_c = 'div.texts span'
     comments = [comment.text for comment in soup.select(selector_c)]
     selector_g = 'span.d_book a'
@@ -59,7 +59,7 @@ def check_url(url):
     response.raise_for_status()
 
     try:
-        get_description_book(url)
+        get_book(url)
         return True
     except TypeError:
         return False
