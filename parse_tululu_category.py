@@ -99,7 +99,7 @@ def main():
     library = []
 
     for page in range(start_page, end_page):
-        url = urljoin('http://tululu.org/l55/', f"{str(page)}/")
+        url = urljoin('http://tululu.org/l55/', f"{page}/")
         ids += get_page_ids(url)
 
     for id_ in ids:
