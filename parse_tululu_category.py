@@ -72,43 +72,29 @@ def get_page_ids(url):
 
     return page_ids
 
-def work_with_args(args):
-    start_page, end_page = args.start_page, args.end_page
-    if end_page is None:
-        end_page = 702
-    if start_page is None:
-        start_page = 1
-
-    if args.json_path:
-        filename = args.json_path
-    else:
-        filename = "library.json"
-
-    if args.dest_folder:
-        print(str(str(os.path.abspath('parse_tululu_category.py')).split('parse_tululu_category.py')[0]))
-
-    return start_page, end_page, filename
-
 def get_args():
     parser = argparse.ArgumentParser(
         description='This parser is designed to quickly and efficiently search for data on science fiction \
             books from tululu.org. At the same time, you can download their contents and their covers.'
     )
-    parser.add_argument('--start_page', help='First page', type=int)
-    parser.add_argument('--end_page', help='Last page', type=int)
-    parser.add_argument('--dest_folder', help='Path to the directory with parsing results: images, books, JSON')
-    parser.add_argument('--skip_imgs', help='Do not download pictures', type=bool)
-    parser.add_argument('--skip_txt', help='Do not download books')
-    parser.add_argument('--json_path', help='Indicate your path to the * .json file with the results')
+    parser.add_argument('--start_page', help='First page', type=int, default=0)
+    parser.add_argument('--end_page', help='Last page', type=int, default=702)
+    parser.add_argument('--dest_folder', help='Path to the directory with parsing results: images, books, JSON', type=bool, default=False)
+    parser.add_argument('--skip_imgs', help='Do not download pictures', type=bool, default=False)
+    parser.add_argument('--skip_txt', help='Do not download books', type=bool, default=False)
+    parser.add_argument('--json_path', help='Indicate your path to the * .json file with the results', type=str, default="library.json")
     args = parser.parse_args()
 
     return args
 
 def main():
     args = get_args()
-    start_page, end_page, filename = work_with_args(args)
+    filename = args.json_path
     os.makedirs("books", exist_ok=True)
     os.makedirs("images", exist_ok=True)
+    start_page, end_page = args.start_page, args.end_page
+    if args.dest_folder:
+        print(os.path.dirname(os.path.abspath('parse_tululu_category.py')))
     ids = []
     library = []
 
