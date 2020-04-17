@@ -15,7 +15,7 @@ def write_json(library, filename):
         json.dump(library_new, file, ensure_ascii=False)
 
 
-def download_picture(url, filename, folder='images/'):
+def download_picture(url, filename, folder='images'):
     filepath = os.path.join(folder, sanitize_filename(filename))
 
     response = requests.get(url, allow_redirects=False)
@@ -25,7 +25,7 @@ def download_picture(url, filename, folder='images/'):
 
     return filepath
 
-def download_txt(url, filename, folder='books/'):
+def download_txt(url, filename, folder='books'):
     filepath = os.path.join(folder, sanitize_filename(filename))
 
     response = requests.get(url, allow_redirects=False)
