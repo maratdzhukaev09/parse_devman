@@ -18,7 +18,7 @@
 
 xxx - (int, по умолчанию `0`, <702) страница, с которой начинается скачивание книг.
 
-```python
+```sh
 python parse_tululu_category.py --start_page 700
 #Скачаются все книги, начиная с 700 страницы
 ```
@@ -27,13 +27,13 @@ python parse_tululu_category.py --start_page 700
 
 xxx - (int, по умолчанию `702`, <702) страница, до которой скачиваются книги.
 
-```python
+```sh
 python parse_tululu_category.py --end_page 701
 #Скачаются все книги, до 702 страницы
 ```
 
-```python
-python parse_tululu_category.py --tart_page 700 --end_page 701
+```sh
+python parse_tululu_category.py --start_page 700 --end_page 701
 #Скачаются все книги, с 700 до 702 страницы
 ```
 
@@ -41,7 +41,7 @@ python parse_tululu_category.py --tart_page 700 --end_page 701
 
 xxx - (bool, по умолчанию `False`).
 
-```python
+```sh
 python parse_tululu_category.py --dest_folder True
 #Выдаст путь к файлу, где хранятся книги, обложки книг и файл с описанием книг
 ```
@@ -50,7 +50,7 @@ python parse_tululu_category.py --dest_folder True
 
 xxx - (bool, по умолчанию `False`).
 
-```python
+```sh
 python parse_tululu_category.py --skip_imgs True
 #Не будет скачивать обложки книг
 ```
@@ -59,7 +59,7 @@ python parse_tululu_category.py --skip_imgs True
 
 xxx - (bool, по умолчанию `False`).
 
-```python
+```sh
 python parse_tululu_category.py --skip_txt True
 #Не будет скачивать содержание книг
 ```
@@ -68,7 +68,7 @@ python parse_tululu_category.py --skip_txt True
 
 xxx - (str, по умолчанию `library.json`) имя файла, где будет хранится описание книг.
 
-```python
+```sh
 python parse_tululu_category.py --json_path lib.json
 #Описание книг будет сохранятся в файл 'lib.json'
 ```
