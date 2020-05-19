@@ -79,7 +79,7 @@ def get_args():
     )
     parser.add_argument('--start_page', help='First page', type=int, default=0)
     parser.add_argument('--end_page', help='Last page', type=int, default=702)
-    parser.add_argument('--dest_folder', help='Path to the directory with parsing results: images, books, JSON', type=bool, default=False)
+    parser.add_argument('--dest_folder', help='Path to the directory with parsing results: images, books, JSON', type=str, default="")
     parser.add_argument('--skip_imgs', help='Do not download pictures', type=bool, default=False)
     parser.add_argument('--skip_txt', help='Do not download books', type=bool, default=False)
     parser.add_argument('--json_path', help='Indicate your path to the * .json file with the results', type=str, default="library.json")
@@ -89,12 +89,15 @@ def get_args():
 
 def main():
     args = get_args()
-    filename = args.json_path
-    os.makedirs("books", exist_ok=True)
-    os.makedirs("images", exist_ok=True)
+    if args.dest_folder == "":
+        json_filename = args.json_path
+    else:
+        json_filename = os.path.join(args.dest_folder, "library.json")
+    books_folder = os.path.join(args.dest_folder, "books")
+    image_folder = os.path.join(args.dest_folder, "images")
+    os.makedirs(books_folder, exist_ok=True)
+    os.makedirs(image_folder, exist_ok=True)
     start_page, end_page = args.start_page, args.end_page
-    if args.dest_folder:
-        print(os.path.dirname(os.path.abspath('parse_tululu_category.py')))
     urls = []
     library = []
 
