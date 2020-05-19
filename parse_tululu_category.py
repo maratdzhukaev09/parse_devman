@@ -18,6 +18,8 @@ def get_response(url):
     try:
         response = requests.get(url, allow_redirects=False)
         response.raise_for_status()
+        if response.is_redirect:
+            raise requests.HTTPError('Url redirect.')
         return response
     except requests.exceptions.ConnectionError:
         time.sleep(15)
