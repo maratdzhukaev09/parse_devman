@@ -1,4 +1,4 @@
-import requests, os, json, argparse
+import requests, os, json, argparse, datetime, time
 from bs4 import BeautifulSoup
 from pathvalidate import sanitize_filename
 from urllib.parse import urljoin
@@ -14,12 +14,23 @@ def write_json(added_library, filename):
         new_library = [el for el, _ in groupby(old_library + added_library)]
         json.dump(new_library, file, ensure_ascii=False)
 
+def get_response(url):
+    try:
+        response = requests.get(url, allow_redirects=False)
+        response.raise_for_status()
+        return response
+    except requests.exceptions.ConnectionError:
+        time.sleep(15)
+        print('Trying to reconnect...')
+        return get_response(url)
+    except ConnectionError:
+        time.sleep(15)
+        print('Trying to reconnect...')
+        return get_response(url)
 
 def download_picture(url, filename, folder='images'):
     filepath = os.path.join(folder, sanitize_filename(filename))
-
-    response = requests.get(url, allow_redirects=False)
-    response.raise_for_status()
+    response = get_response(url)
     with open(filepath, 'wb') as file:
         file.write(response.content)
 
@@ -27,17 +38,14 @@ def download_picture(url, filename, folder='images'):
 
 def download_txt(url, filename, folder='books'):
     filepath = os.path.join(folder, sanitize_filename(filename))
-
-    response = requests.get(url, allow_redirects=False)
-    response.raise_for_status()
+    response = get_response(url)
     with open(filepath, 'wb') as file:
         file.write(response.content)
 
     return filepath
 
 def get_book(url):
-    response = requests.get(url)
-    response.raise_for_status()
+    response = get_response(url)
     soup = BeautifulSoup(response.text, 'lxml')
 
     selector_ta = 'td.ow_px_td h1'
@@ -52,9 +60,6 @@ def get_book(url):
     selector_g = 'span.d_book a'
     genres = [genre.text for genre in soup.select(selector_g)]
 
-
-    response = requests.get(url, allow_redirects=False)
-    response.raise_for_status()
     return title, author, comments, genres, txt_url, image_url
 
 def check_page(url):
@@ -64,9 +69,8 @@ def check_page(url):
     except TypeError:
         return False
 
-    response = requests.get(url)
-    response.raise_for_status()
 def get_page_urls(url):
+    response = get_response(url)
     soup = BeautifulSoup(response.text, 'lxml')
     page_urls = [urljoin(url, id_.select_one('a')['href']) for id_ in soup.select('table.d_book')]
 
