@@ -70,7 +70,7 @@ xxx - (str, по умолчанию `library.json`) имя файла, где б
 
 ```sh
 python parse_tululu_category.py --json_path lib.json
-#Описание книг будет сохранятся в файл 'lib.json'
+#Описание книг будет сохраняться в файл 'lib.json'
 ```
 
 ## Цель проекта
