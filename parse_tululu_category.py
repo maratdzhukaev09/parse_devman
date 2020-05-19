@@ -4,15 +4,15 @@ from pathvalidate import sanitize_filename
 from urllib.parse import urljoin
 from itertools import groupby
 
-def write_json(library, filename):
+def write_json(added_library, filename):
     if not os.path.exists(filename):
         with open(filename, "w", encoding='utf8') as file:
             json.dump([], file, ensure_ascii=False)
     with open(filename, "r") as file:
-        library_old = json.load(file)
+        old_library = json.load(file)
     with open(filename, "w", encoding='utf8') as file:
-        library_new = [el for el, _ in groupby(library_old + library)]
-        json.dump(library_new, file, ensure_ascii=False)
+        new_library = [el for el, _ in groupby(old_library + added_library)]
+        json.dump(new_library, file, ensure_ascii=False)
 
 
 def download_picture(url, filename, folder='images'):
@@ -42,35 +42,35 @@ def get_book(url):
 
     selector_ta = 'td.ow_px_td h1'
     title, author = soup.select_one(selector_ta).text.split('   ::   ')
-    href_txt = soup.find('a', title=f'{title} - скачать книгу txt')['href']
-    url_txt = urljoin(url, href_txt)
+    txt_href = soup.find('a', title=f'{title} - скачать книгу txt')['href']
+    txt_url = urljoin(url, txt_href)
     selector_pp = 'div.bookimage img'
-    href_image = soup.select_one(selector_pp)['src']
-    url_image = urljoin(url, href_image)
+    image_href = soup.select_one(selector_pp)['src']
+    image_url = urljoin(url, image_href)
     selector_c = 'div.texts span'
     comments = [comment.text for comment in soup.select(selector_c)]
     selector_g = 'span.d_book a'
     genres = [genre.text for genre in soup.select(selector_g)]
 
-    return title, author, comments, genres, url_txt, url_image
 
-def check_url(url):
     response = requests.get(url, allow_redirects=False)
     response.raise_for_status()
+    return title, author, comments, genres, txt_url, image_url
 
+def check_page(url):
     try:
         get_book(url)
         return True
     except TypeError:
         return False
 
-def get_page_ids(url):
     response = requests.get(url)
     response.raise_for_status()
+def get_page_urls(url):
     soup = BeautifulSoup(response.text, 'lxml')
-    page_ids = [urljoin(url, id_.select_one('a')['href']) for id_ in soup.select('table.d_book')]
+    page_urls = [urljoin(url, id_.select_one('a')['href']) for id_ in soup.select('table.d_book')]
 
-    return page_ids
+    return page_urls
 
 def get_args():
     parser = argparse.ArgumentParser(
@@ -95,18 +95,18 @@ def main():
     start_page, end_page = args.start_page, args.end_page
     if args.dest_folder:
         print(os.path.dirname(os.path.abspath('parse_tululu_category.py')))
-    ids = []
+    urls = []
     library = []
 
     for page in range(start_page, end_page):
         url = urljoin('http://tululu.org/l55/', f"{page}/")
-        ids += get_page_ids(url)
+        urls += get_page_urls(url)
 
-    for id_ in ids:
-        if not check_url(id_):
+    for url in urls:
+        if not check_page(url):
             continue
         book = dict()
-        book['title'], book['author'], book['comments'], book['genres'], url_txt, url_image = get_book(id_)
+        book['title'], book['author'], book['comments'], book['genres'], txt_url, image_url = get_book(url)
 
         if args.skip_txt:
             book['book_path'] = None
@@ -120,7 +120,7 @@ def main():
 
         library.append(book)
 
-    write_json(library, filename)
+    write_json(library, json_filename)
 
 if __name__ == "__main__":
     main()
