@@ -39,11 +39,11 @@ python parse_tululu_category.py --start_page 700 --end_page 701
 
 ### --dest_folder xxx
 
-xxx - (bool, по умолчанию `False`).
+xxx - (str, по умолчанию `''`).
 
 ```sh
-python parse_tululu_category.py --dest_folder True
-#Выдаст путь к файлу, где хранятся книги, обложки книг и файл с описанием книг
+python parse_tululu_category.py --dest_folder C:\Users\User\Devman\
+#Содержание, описание и обложки книг будут сохраняться в папке C:\Users\User\Devman 
 ```
 
 ### --skip_imgs xxx
