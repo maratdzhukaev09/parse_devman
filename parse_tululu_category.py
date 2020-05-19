@@ -114,12 +114,13 @@ def main():
         if args.skip_txt:
             book['book_path'] = None
         else:
-            book['book_path'] = download_txt(url_txt, f"{book['title']}.txt")
+            book_filename = f"{book['title']}{datetime.datetime.today().timestamp()}.txt"
+            book['book_path'] = download_txt(txt_url, book_filename, books_folder)
         if args.skip_imgs:
             book['image_src'] = None
         else:
-            image_filename = url_image.split('/')[-1]
-            book['image_src'] = download_picture(url_image, image_filename)
+            image_filename = image_url.split('/')[-1].split('.')[0] + str(datetime.datetime.today().timestamp()) + ".jpg"
+            book['image_src'] = download_picture(image_url, image_filename, image_folder)
 
         library.append(book)
 
