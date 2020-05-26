@@ -85,13 +85,6 @@ def get_book(url):
 
     return title, author, comments, genres, txt_url, image_url
 
-def check_page(url):
-    try:
-        get_book(url)
-        return True
-    except TypeError:
-        return False
-
 def get_page_urls(url):
     response = get_response(url)
     soup = BeautifulSoup(response.text, 'lxml')
@@ -130,10 +123,11 @@ def main():
         urls += get_page_urls(url)
 
     for url in urls:
-        if not check_page(url):
-            continue
         book = dict()
-        book['title'], book['author'], book['comments'], book['genres'], txt_url, image_url = get_book(url)
+        try:
+            book['title'], book['author'], book['comments'], book['genres'], txt_url, image_url = get_book(url)
+        except TypeError:
+            continue
 
         if args.skip_txt:
             book['book_path'] = None
