@@ -1,8 +1,12 @@
-import requests, os, json, argparse, datetime, time
+from __future__ import print_function
+import requests, os, json, argparse, datetime, time, sys
 from bs4 import BeautifulSoup
 from pathvalidate import sanitize_filename
 from urllib.parse import urljoin
 from itertools import groupby
+
+def eprint(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
 
 def write_json(added_library, filename):
     if not os.path.exists(filename):
@@ -14,21 +18,38 @@ def write_json(added_library, filename):
         new_library = [el for el, _ in groupby(old_library + added_library)]
         json.dump(new_library, file, ensure_ascii=False)
 
-def get_response(url):
-    try:
+def get_response(url, reconnect_counter=0):
+    while reconnect_counter <= 30:
+        try:
+            response = requests.get(url, allow_redirects=False)
+            response.raise_for_status()
+            if response.is_redirect:
+                raise requests.HTTPError('Url redirect.')
+            return response
+        except requests.exceptions.ConnectionError:
+            reconnect_counter += 1
+            eprint('No Connection')
+            time.sleep(15)
+            eprint('Trying to reconnect...')
+            return get_response(url, reconnect_counter)
+        except ConnectionError:
+            reconnect_counter += 1
+            eprint('No Connection')
+            time.sleep(15)
+            eprint('Trying to reconnect...')
+            return get_response(url, reconnect_counter)
+        except requests.HTTPError:
+            reconnect_counter += 1
+            eprint('No Connection')
+            time.sleep(15)
+            eprint('Trying to reconnect...')
+            return get_response(url, reconnect_counter)
+    else:
         response = requests.get(url, allow_redirects=False)
         response.raise_for_status()
         if response.is_redirect:
             raise requests.HTTPError('Url redirect.')
         return response
-    except requests.exceptions.ConnectionError:
-        time.sleep(15)
-        print('Trying to reconnect...')
-        return get_response(url)
-    except ConnectionError:
-        time.sleep(15)
-        print('Trying to reconnect...')
-        return get_response(url)
 
 def download_picture(url, filename, folder='images'):
     filepath = os.path.join(folder, sanitize_filename(filename))
