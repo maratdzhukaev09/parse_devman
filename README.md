@@ -43,7 +43,7 @@ xxx - (str, по умолчанию `''`).
 
 ```sh
 python parse_tululu_category.py --dest_folder C:\Users\User\Devman\
-#Содержание, описание и обложки книг будут сохраняться в папке C:\Users\User\Devman 
+#Содержание, описание и обложки книг будут сохраняться в папке C:\Users\User\Devman\
 ```
 
 ### --skip_imgs xxx
