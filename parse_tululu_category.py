@@ -8,7 +8,7 @@ def write_json(added_library, filename):
     if not os.path.exists(filename):
         with open(filename, "w", encoding='utf8') as file:
             json.dump([], file, ensure_ascii=False)
-    with open(filename, "r") as file:
+    with open(filename, "r", encoding='utf8') as file:
         old_library = json.load(file)
     with open(filename, "w", encoding='utf8') as file:
         new_library = [el for el, _ in groupby(old_library + added_library)]
