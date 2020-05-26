@@ -95,10 +95,7 @@ def get_args():
 
 def main():
     args = get_args()
-    if args.dest_folder == "":
-        json_filename = args.json_path
-    else:
-        json_filename = os.path.join(args.dest_folder, "library.json")
+    json_filename = os.path.join(args.dest_folder, args.json_path)
     books_folder = os.path.join(args.dest_folder, "books")
     image_folder = os.path.join(args.dest_folder, "images")
     os.makedirs(books_folder, exist_ok=True)
