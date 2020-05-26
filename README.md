@@ -73,6 +73,8 @@ python parse_tululu_category.py --json_path lib.json
 #Описание книг будет сохраняться в файл 'lib.json'
 ```
 
+**! При использовании вместе с --dest_folder указывайте только имя файла(`libary.json`), а не путь(`C:\Users\User\Devman\library.json`) !**
+
 ## Цель проекта
 
 Код написан в образовательных целях на онлайн-курсе для веб-разработчиков [dvmn.org](https://dvmn.org/).
