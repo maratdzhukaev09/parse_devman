@@ -18,42 +18,32 @@ def write_json(added_library, filename):
         new_library = [el for el, _ in groupby(old_library + added_library)]
         json.dump(new_library, file, ensure_ascii=False)
 
-def get_response(url, reconnect_counter=0):
+def get_response(url):
+    response = requests.get(url, allow_redirects=False)
+    response.raise_for_status()
+    if response.is_redirect:
+        raise requests.HTTPError('Url redirect.')
+    return response
+
+def reconnect_get_response(url, reconnect_counter=0):
     while reconnect_counter <= 30:
         try:
-            response = requests.get(url, allow_redirects=False)
-            response.raise_for_status()
-            if response.is_redirect:
-                raise requests.HTTPError('Url redirect.')
-            return response
-        except requests.exceptions.ConnectionError:
+            return get_response(url)
+        except (requests.exceptions.ConnectionError, ConnectionError) as e:
             reconnect_counter += 1
             eprint('No Connection')
             time.sleep(15)
             eprint('Trying to reconnect...')
-            return get_response(url, reconnect_counter)
-        except ConnectionError:
-            reconnect_counter += 1
-            eprint('No Connection')
-            time.sleep(15)
-            eprint('Trying to reconnect...')
-            return get_response(url, reconnect_counter)
-        except requests.HTTPError:
-            reconnect_counter += 1
-            eprint('No Connection')
-            time.sleep(15)
-            eprint('Trying to reconnect...')
-            return get_response(url, reconnect_counter)
+            return reconnect_get_response(url, reconnect_counter)
     else:
-        response = requests.get(url, allow_redirects=False)
-        response.raise_for_status()
-        if response.is_redirect:
-            raise requests.HTTPError('Url redirect.')
-        return response
+        return get_response(url)
 
 def download_picture(url, filename, folder='images'):
     filepath = os.path.join(folder, sanitize_filename(filename))
-    response = get_response(url)
+    try:
+        response = get_response(url)
+    except (requests.exceptions.ConnectionError, ConnectionError) as e:
+        response = reconnect_get_response(url)
     with open(filepath, 'wb') as file:
         file.write(response.content)
 
@@ -61,14 +51,20 @@ def download_picture(url, filename, folder='images'):
 
 def download_txt(url, filename, folder='books'):
     filepath = os.path.join(folder, sanitize_filename(filename))
-    response = get_response(url)
+    try:
+        response = get_response(url)
+    except (requests.exceptions.ConnectionError, ConnectionError) as e:
+        response = reconnect_get_response(url)
     with open(filepath, 'wb') as file:
         file.write(response.content)
 
     return filepath
 
 def get_book(url):
-    response = get_response(url)
+    try:
+        response = get_response(url)
+    except (requests.exceptions.ConnectionError, ConnectionError) as e:
+        response = reconnect_get_response(url)
     soup = BeautifulSoup(response.text, 'lxml')
 
     selector_ta = 'td.ow_px_td h1'
@@ -86,7 +82,10 @@ def get_book(url):
     return title, author, comments, genres, txt_url, image_url
 
 def get_page_urls(url):
-    response = get_response(url)
+    try:
+        response = get_response(url)
+    except (requests.exceptions.ConnectionError, ConnectionError) as e:
+        response = reconnect_get_response(url)
     soup = BeautifulSoup(response.text, 'lxml')
     page_urls = [urljoin(url, id_.select_one('a')['href']) for id_ in soup.select('table.d_book')]
 
@@ -126,7 +125,7 @@ def main():
         book = dict()
         try:
             book['title'], book['author'], book['comments'], book['genres'], txt_url, image_url = get_book(url)
-        except TypeError:
+        except (TypeError, requests.HTTPError) as e:
             continue
 
         if args.skip_txt:
@@ -134,14 +133,22 @@ def main():
         else:
             book_timestamp = datetime.datetime.today().timestamp()
             book_filename = f"{book['title']}_{book_timestamp}.txt"
-            book['book_path'] = download_txt(txt_url, book_filename, books_folder)
+            try:
+                book['book_path'] = download_txt(txt_url, book_filename, books_folder)
+            except requests.HTTPError:
+                eprint(f"Invalid url: {txt_url}")
+                book["book_path"] = None
         if args.skip_imgs:
             book['image_src'] = None
         else:
             image_timestamp = datetime.datetime.today().timestamp()
             image_name = image_url.split('/')[-1].split('.')[0]
             image_filename = f"{image_name}_{image_timestamp}.jpg"
-            book['image_src'] = download_picture(image_url, image_filename, image_folder)
+            try:
+                book['image_src'] = download_picture(image_url, image_filename, image_folder)
+            except requests.HTTPError:
+                eprint(f"Invalid url: {image_url}")
+                book['image_src'] = None
 
         library.append(book)
 
